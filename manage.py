@@ -7,6 +7,14 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myshop.settings')
+
+    # Auto-creación de BD PostgreSQL y tablas al ejecutarse
+    try:
+        from myshop.auto_db import ensure_postgres_db_and_tables
+        ensure_postgres_db_and_tables()
+    except Exception as e:
+        print(f"[Auto-DB Warning]: {e}")
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
