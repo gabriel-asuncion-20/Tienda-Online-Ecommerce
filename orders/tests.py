@@ -110,4 +110,4 @@ class OrderViewsTest(TestCase):
         )
         response = self.client.get(reverse('orders:order_history'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Cliente')
+        self.assertContains(response, 'HISTORIAL DE PEDIDOS')
