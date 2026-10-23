@@ -1,5 +1,5 @@
-# 1. Imagen base basada en Python 3.12 (versión compatible y optimizada)
-FROM python:3.12-slim
+# 1. Imagen base basada en Python 3.10 (según especificación oficial de la práctica)
+FROM python:3.10-slim
 
 # Variables de entorno para optimizar la salida de Python en Docker
 ENV PYTHONDONTWRITEBYTECODE=1
