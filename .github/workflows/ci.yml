@@ -1,0 +1,54 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main", "master", "ci-setup" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_ecommerce_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # Evitar conflicto de puertos con el servicio postgres local del runner de Ubuntu
+      - name: Detener PostgreSQL local del runner
+        run: sudo systemctl stop postgresql || true
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar pruebas (tests)
+        env:
+          DATABASE_URL: postgresql://postgres:postgrespassword@127.0.0.1:5432/test_ecommerce_db
+          DB_NAME: test_ecommerce_db
+          DB_USER: postgres
+          DB_PASSWORD: postgrespassword
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          SECRET_KEY: django-insecure-ci-test-key
+          DEBUG: "True"
+        run: |
+          python manage.py test
